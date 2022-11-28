@@ -3,7 +3,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.use(express.json());
 app.use(cors());
@@ -23,12 +23,24 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const watchCategoriesCollection = client.db('usedProducts').collection('watchCategories');
+        const productsCollection = client.db('usedProducts').collection('products');
 
         app.get('/watchCategories', async (req, res) => {
           
             const query = {};
             const categories = await watchCategoriesCollection.find(query).toArray();
             res.send(categories);
+
+        })
+
+        app.get('/watchCategories/:id', async (req, res) => {
+        
+            const id = req.params.id;
+            const query = { category_id: id};
+          
+            const product = await productsCollection.find(query).toArray();
+            res.send(product);
+
 
         })
         
