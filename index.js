@@ -13,10 +13,6 @@ app.get('/', async(req, res) => {
 
 })
 
-
-
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.yagkdpa.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -25,6 +21,8 @@ async function run() {
         const watchCategoriesCollection = client.db('usedProducts').collection('watchCategories');
         const productsCollection = client.db('usedProducts').collection('products');
         const bookingsCollection = client.db('usedProducts').collection('bookings');
+        const usersCollection = client.db('usedProducts').collection('users');
+        
 
         app.get('/watchCategories', async (req, res) => {
           
@@ -44,6 +42,15 @@ async function run() {
         });
 
 
+        app.get('/bookings', async (req, res) => {
+            
+            const email = req.query.email;
+            const query = { email: email };
+            const bookings = await bookingsCollection.find(query).toArray();
+            res.send(bookings);
+        })
+
+
         app.post('/bookings', async (req, res) => {
             
             const booking = req.body;
@@ -51,7 +58,10 @@ async function run() {
             const result = await bookingsCollection.insertOne(booking);
             res.send(result);
 
-        })
+        });
+
+        //for users
+        
         
     }
     finally {
